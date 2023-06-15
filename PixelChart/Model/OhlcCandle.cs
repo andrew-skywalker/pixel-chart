@@ -1,4 +1,4 @@
-﻿namespace PixelChart;
+﻿namespace PixelChart.Model;
 
 public class OhlcCandle
 {
