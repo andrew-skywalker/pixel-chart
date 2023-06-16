@@ -116,11 +116,11 @@ public class DailyChart
         {
             if (c.Close > c.Open)
             {
-                DrawCandle(canvas, c.X, c, paintGreen);
+                DrawCandle(canvas, c, paintGreen);
             }
             else
             {
-                DrawCandle(canvas, c.X, c, paintRed);
+                DrawCandle(canvas, c, paintRed);
             }
         }
 
@@ -137,9 +137,9 @@ public class DailyChart
         Debug.WriteLine(t.ElapsedMilliseconds);
     }
 
-    void DrawCandle(SKCanvas canvas, int i, OhlcCandle candle, SKPaint paint)
+    void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
     {
-        int rectX = LeftPadding + candleAreaWidth * i;
+        int rectX = LeftPadding + candleAreaWidth * candle.X;
         int rectY, rectHeight;
 
         //TODO: doji case is not drawn when close!=open, yet body height is too small
