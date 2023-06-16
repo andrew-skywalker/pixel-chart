@@ -4,8 +4,13 @@ using System.Drawing;
 
 namespace PixelChart;
 
-internal class DailyChart
+public class DailyChart
 {
+    public DailyChart()
+    {
+        ColorScheme.Init("light");
+    }
+
     //size variables
     public int chartAreaHeight = 300;
     public int chartAreaWidth = 1600;
@@ -39,6 +44,8 @@ internal class DailyChart
 
                 _candles = value;
             }
+
+            AutoScaleY();
         }
     }
 
@@ -107,7 +114,7 @@ internal class DailyChart
         //vertical axis
         gfx.DrawLine(penGray, chartAreaWidth, 0, chartAreaWidth, chartAreaHeight);
 
-        bmp.Save("daily_chart.png");
+        bmp.Save("daily_chart.png", System.Drawing.Imaging.ImageFormat.Png);
 
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);
@@ -117,6 +124,8 @@ internal class DailyChart
     {
         int rectX = LeftPadding + candleAreaWidth * i;
         int rectY, rectHeight;
+
+        //TODO: doji case is not drawn when close!=open, yet body height is too small
 
         //body
         if (candle.Close == candle.Open) //TODO: doji case might be detected by rectHeight, not OHLC
