@@ -17,6 +17,7 @@ public class DailyChart
     public int LeftPadding { get; set; } = 1;
     int candleWidth = 3;
     int candleAreaWidth = 4;
+    int fontSize = 16;
 
     //data variables
     decimal y_min;
@@ -102,6 +103,10 @@ public class DailyChart
         SKPaint paintGray = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
         SKPaint paintGrayDot = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
         paintGrayDot.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
+        SKPaint paintLabels = SKPaintFromSystemDrawing(ColorScheme.colorLables);
+        paintLabels.Typeface = SKTypeface.FromFamilyName("Segoe UI");
+        paintLabels.TextSize = fontSize;
+        paintLabels.IsAntialias = true;
 
         canvas.Clear(skBackgroud);
 
@@ -129,6 +134,12 @@ public class DailyChart
 
         //vertical axis
         canvas.DrawLine(chartAreaWidth, 0, chartAreaWidth, chartAreaHeight, paintGray);
+
+        //draw labels
+        foreach ((int x, string text) in XTicks)
+        {
+            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
+        }
 
         SKFileWStream fs = new("sk_daily_chart.png");
         bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
