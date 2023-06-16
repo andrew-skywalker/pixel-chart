@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace PixelChart;
 
-internal class Chart
+internal class DailyChart
 {
     //size variables
     public int chartAreaHeight = 300;
