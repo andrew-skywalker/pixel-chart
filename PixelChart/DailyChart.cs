@@ -1,5 +1,6 @@
 ﻿using PixelChart.Model;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace PixelChart;
 
@@ -15,6 +16,7 @@ internal class DailyChart
     //data variables
     decimal y_min;
     decimal y_max;
+    public List<(int x, string text)> XTicks = new();
     public Dictionary<DateTime, int> DateToCoordDict = new();
 
     List<OhlcCandle> _candles = new();
@@ -70,8 +72,91 @@ internal class DailyChart
         Stopwatch t = new Stopwatch();
         t.Start();
 
+        using var bmp = new Bitmap(width, height);
+        using var gfx = Graphics.FromImage(bmp);
+        using var penGreen = new Pen(ColorScheme.colorGreenCandle);
+        using var penRed = new Pen(ColorScheme.colorRedCandle);
+        using var penGray = new Pen(ColorScheme.colorGrid);
+        using var dotGrayDot = new Pen(ColorScheme.colorGrid);
+        dotGrayDot.DashPattern = ColorScheme.dashPattern;
+
+        gfx.Clear(ColorScheme.colorBackground);
+
+        //draw vertical grid behind candles
+        foreach ((int x, _) in XTicks)
+        {
+            gfx.DrawLine(dotGrayDot, CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight);
+        }
+
+        // candles
+        foreach (var c in Candles)
+        {
+            if (c.Close > c.Open)
+            {
+                DrawCandle(gfx, c.X, c, penGreen);
+            }
+            else
+            {
+                DrawCandle(gfx, c.X, c, penRed);
+            }
+        }
+
+        // horizontal axis
+        gfx.DrawLine(penGray, 0, chartAreaHeight, chartAreaWidth, chartAreaHeight);
+
+        //vertical axis
+        gfx.DrawLine(penGray, chartAreaWidth, 0, chartAreaWidth, chartAreaHeight);
+
+        bmp.Save("daily_chart.png");
 
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);
+    }
+
+    void DrawCandle(Graphics gfx, int i, OhlcCandle candle, Pen pen)
+    {
+        int rectX = LeftPadding + candleAreaWidth * i;
+        int rectY, rectHeight;
+
+        //body
+        if (candle.Close == candle.Open) //TODO: doji case might be detected by rectHeight, not OHLC
+        {
+            rectY = CoordToPixelY(candle.Close);
+            rectHeight = 0;
+
+            gfx.DrawLine(pen, rectX, rectY, rectX + candleWidth - 1, rectY);
+        }
+        else
+        {
+            if (candle.Close > candle.Open)
+            {
+                rectY = CoordToPixelY(candle.Close);
+                rectHeight = CoordToPixelY(candle.Open) - rectY;
+            }
+            else
+            {
+                rectY = CoordToPixelY(candle.Open);
+                rectHeight = CoordToPixelY(candle.Close) - rectY;
+            }
+
+            if (ColorScheme.isCandlesFilled)
+            {
+                Rectangle rect = new(rectX, rectY, candleWidth, rectHeight);
+                gfx.FillRectangle(pen.Brush, rect);
+            }
+            else
+            {
+                Rectangle rect = new(rectX, rectY, candleWidth - 1, rectHeight);
+                gfx.DrawRectangle(pen, rect);
+            }
+        }
+
+        //upper wick
+        int wickHigh = CoordToPixelY(candle.High);
+        gfx.DrawLine(pen, rectX + 1, wickHigh, rectX + 1, rectY);
+
+        //lower wick
+        int wickLow = CoordToPixelY(candle.Low);
+        gfx.DrawLine(pen, rectX + 1, rectY + rectHeight, rectX + 1, wickLow);
     }
 }
