@@ -88,7 +88,7 @@ public class DailyChart
         };
     }
 
-    public void Render(int width, int height)
+    public void Render(int width, int height, string filename)
     {
         Stopwatch t = new Stopwatch();
         t.Start();
@@ -141,7 +141,7 @@ public class DailyChart
             canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
         }
 
-        SKFileWStream fs = new("sk_daily_chart.png");
+        SKFileWStream fs = new(filename);
         bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
 
         t.Stop();
