@@ -1,6 +1,6 @@
 ﻿using PixelChart.Model;
 using System.Diagnostics;
-using System.Drawing;
+using SkiaSharp;
 
 namespace PixelChart;
 
@@ -74,25 +74,41 @@ public class DailyChart
     }
 
     //painting
+    SKColor SKColorFromSystemDrawing(System.Drawing.Color source)
+    {
+        return new SKColor(red: source.R, green: source.G, blue: source.B);
+    }
+
+    SKPaint SKPaintFromSystemDrawing(System.Drawing.Color source)
+    {
+        return new SKPaint
+        {
+            Color = SKColorFromSystemDrawing(source)
+        };
+    }
+
     public void Render(int width, int height)
     {
         Stopwatch t = new Stopwatch();
         t.Start();
 
-        using var bmp = new Bitmap(width, height);
-        using var gfx = Graphics.FromImage(bmp);
-        using var penGreen = new Pen(ColorScheme.colorGreenCandle);
-        using var penRed = new Pen(ColorScheme.colorRedCandle);
-        using var penGray = new Pen(ColorScheme.colorGrid);
-        using var dotGrayDot = new Pen(ColorScheme.colorGrid);
-        dotGrayDot.DashPattern = ColorScheme.dashPattern;
+        SKBitmap bmp = new(width, height);
+        using SKCanvas canvas = new(bmp);
 
-        gfx.Clear(ColorScheme.colorBackground);
+        SKColor skBackgroud = SKColorFromSystemDrawing(ColorScheme.colorBackground);
+
+        SKPaint paintGreen = SKPaintFromSystemDrawing(ColorScheme.colorGreenCandle);
+        SKPaint paintRed = SKPaintFromSystemDrawing(ColorScheme.colorRedCandle);
+        SKPaint paintGray = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
+        SKPaint paintGrayDot = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
+        paintGrayDot.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
+
+        canvas.Clear(skBackgroud);
 
         //draw vertical grid behind candles
         foreach ((int x, _) in XTicks)
         {
-            gfx.DrawLine(dotGrayDot, CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight);
+            canvas.DrawLine(CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight, paintGrayDot);
         }
 
         // candles
@@ -100,27 +116,28 @@ public class DailyChart
         {
             if (c.Close > c.Open)
             {
-                DrawCandle(gfx, c.X, c, penGreen);
+                DrawCandle(canvas, c.X, c, paintGreen);
             }
             else
             {
-                DrawCandle(gfx, c.X, c, penRed);
+                DrawCandle(canvas, c.X, c, paintRed);
             }
         }
 
         // horizontal axis
-        gfx.DrawLine(penGray, 0, chartAreaHeight, chartAreaWidth, chartAreaHeight);
+        canvas.DrawLine(0, chartAreaHeight, chartAreaWidth, chartAreaHeight, paintGray);
 
         //vertical axis
-        gfx.DrawLine(penGray, chartAreaWidth, 0, chartAreaWidth, chartAreaHeight);
+        canvas.DrawLine(chartAreaWidth, 0, chartAreaWidth, chartAreaHeight, paintGray);
 
-        bmp.Save("daily_chart.png", System.Drawing.Imaging.ImageFormat.Png);
+        SKFileWStream fs = new("sk_daily_chart.png");
+        bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
 
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);
     }
 
-    void DrawCandle(Graphics gfx, int i, OhlcCandle candle, Pen pen)
+    void DrawCandle(SKCanvas canvas, int i, OhlcCandle candle, SKPaint paint)
     {
         int rectX = LeftPadding + candleAreaWidth * i;
         int rectY, rectHeight;
@@ -133,7 +150,7 @@ public class DailyChart
             rectY = CoordToPixelY(candle.Close);
             rectHeight = 0;
 
-            gfx.DrawLine(pen, rectX, rectY, rectX + candleWidth - 1, rectY);
+            canvas.DrawLine(rectX, rectY, rectX + candleWidth - 1, rectY, paint);
         }
         else
         {
@@ -150,22 +167,22 @@ public class DailyChart
 
             if (ColorScheme.isCandlesFilled)
             {
-                Rectangle rect = new(rectX, rectY, candleWidth, rectHeight);
-                gfx.FillRectangle(pen.Brush, rect);
+                SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
+                canvas.DrawRect(rect, paint);
             }
             else
             {
-                Rectangle rect = new(rectX, rectY, candleWidth - 1, rectHeight);
-                gfx.DrawRectangle(pen, rect);
+                SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
+                canvas.DrawRect(rect, paint);
             }
         }
 
         //upper wick
         int wickHigh = CoordToPixelY(candle.High);
-        gfx.DrawLine(pen, rectX + 1, wickHigh, rectX + 1, rectY);
+        canvas.DrawLine(rectX + 1, wickHigh, rectX + 1, rectY, paint);
 
         //lower wick
         int wickLow = CoordToPixelY(candle.Low);
-        gfx.DrawLine(pen, rectX + 1, rectY + rectHeight, rectX + 1, wickLow);
+        canvas.DrawLine(rectX + 1, rectY + rectHeight, rectX + 1, wickLow, paint);
     }
 }
