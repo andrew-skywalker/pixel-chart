@@ -1,5 +1,4 @@
-﻿using PixelChart.Model;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using SkiaSharp;
 
 namespace PixelChart;
