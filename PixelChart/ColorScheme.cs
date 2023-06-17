@@ -12,7 +12,7 @@ internal class ColorScheme
     public static Color colorGrid;
     public static List<Color> labelColors = new() { };
     public static Color colorLables;
-    public static float[] dashPattern = new float[] {};
+    public static float[] dashPattern = Array.Empty<float>();
     public static bool isCandlesFilled;
 
     public static void Init(string theme = "light")
