@@ -72,15 +72,13 @@ public class DailyChart : Chart
         int rectX = LeftPadding + candleAreaWidth * candle.X;
         int rectY, rectHeight;
 
-        //TODO: doji case is not drawn when close!=open, yet body height is too small
-
         //body
-        if (candle.Close == candle.Open) //TODO: doji case might be detected by rectHeight, not OHLC
+        if (candle.Close == candle.Open)
         {
             rectY = CoordToPixelY(candle.Close);
             rectHeight = 0;
 
-            canvas.DrawLine(rectX, rectY, rectX + candleWidth - 1, rectY, paint);
+            canvas.DrawLine(rectX, rectY, rectX + candleWidth - 1, rectY, paint); //not actually hit
         }
         else
         {
@@ -95,15 +93,22 @@ public class DailyChart : Chart
                 rectHeight = CoordToPixelY(candle.Close) - rectY;
             }
 
-            if (ColorScheme.isCandlesFilled)
+            if (rectHeight == 0) //doji case
             {
-                SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
-                canvas.DrawRect(rect, paint);
+                canvas.DrawLine(rectX, rectY, rectX + candleWidth, rectY, paint); //working
             }
             else
             {
-                SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
-                canvas.DrawRect(rect, paint);
+                if (ColorScheme.isCandlesFilled)
+                {
+                    SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
+                    canvas.DrawRect(rect, paint);
+                }
+                else
+                {
+                    SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
+                    canvas.DrawRect(rect, paint);
+                }
             }
         }
 
