@@ -6,10 +6,31 @@ namespace PixelChart;
 
 public class DailyChart
 {
-    public DailyChart()
+    public DailyChart(string theme = "light")
     {
         ColorScheme.Init("light");
+
+        skBackgroud = SKColorFromSystemDrawing(ColorScheme.colorBackground);
+        paintGreen = SKPaintFromSystemDrawing(ColorScheme.colorGreenCandle);
+        paintRed = SKPaintFromSystemDrawing(ColorScheme.colorRedCandle);
+        paintGray = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
+
+        paintGrayDot = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
+        paintGrayDot.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
+
+        paintLabels = SKPaintFromSystemDrawing(ColorScheme.colorLables);
+        paintLabels.Typeface = SKTypeface.FromFamilyName("Segoe UI");
+        paintLabels.TextSize = fontSize;
+        paintLabels.IsAntialias = true;
     }
+
+    //SKPaint
+    readonly SKColor skBackgroud;
+    readonly SKPaint paintGreen;
+    readonly SKPaint paintRed;
+    readonly SKPaint paintGray;
+    readonly SKPaint paintGrayDot;
+    readonly SKPaint paintLabels;
 
     //size variables
     public int chartAreaHeight = 300;
@@ -75,12 +96,12 @@ public class DailyChart
     }
 
     //painting
-    SKColor SKColorFromSystemDrawing(System.Drawing.Color source)
+    static SKColor SKColorFromSystemDrawing(System.Drawing.Color source)
     {
         return new SKColor(red: source.R, green: source.G, blue: source.B);
     }
 
-    SKPaint SKPaintFromSystemDrawing(System.Drawing.Color source)
+    static SKPaint SKPaintFromSystemDrawing(System.Drawing.Color source)
     {
         return new SKPaint
         {
@@ -90,24 +111,13 @@ public class DailyChart
 
     public void Render(int width, int height, string filename)
     {
-        Stopwatch t = new Stopwatch();
+        Stopwatch t = new();
         t.Start();
 
         SKBitmap bmp = new(width, height);
         using SKCanvas canvas = new(bmp);
 
-        SKColor skBackgroud = SKColorFromSystemDrawing(ColorScheme.colorBackground);
-
-        SKPaint paintGreen = SKPaintFromSystemDrawing(ColorScheme.colorGreenCandle);
-        SKPaint paintRed = SKPaintFromSystemDrawing(ColorScheme.colorRedCandle);
-        SKPaint paintGray = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
-        SKPaint paintGrayDot = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
-        paintGrayDot.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
-        SKPaint paintLabels = SKPaintFromSystemDrawing(ColorScheme.colorLables);
-        paintLabels.Typeface = SKTypeface.FromFamilyName("Segoe UI");
-        paintLabels.TextSize = fontSize;
-        paintLabels.IsAntialias = true;
-
+        
         canvas.Clear(skBackgroud);
 
         //draw vertical grid behind candles
@@ -141,11 +151,11 @@ public class DailyChart
             canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
         }
 
-        SKFileWStream fs = new(filename);
-        bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
-
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);
+
+        SKFileWStream fs = new(filename);
+        bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
     }
 
     void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
