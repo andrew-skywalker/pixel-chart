@@ -12,71 +12,14 @@ public class DailyChart : Chart
         
     }
 
-    //data variables
-    decimal y_min;
-    decimal y_max;
-    public List<(int x, string text)> XTicks = new();
-    public Dictionary<DateTime, int> DateToCoordDict = new();
-
-    List<OhlcCandle> _candles = new();
-    public List<OhlcCandle> Candles
-    {
-        get => _candles;
-        set
-        {
-            if (_candles != value)
-            {
-                DateToCoordDict.Clear();
-
-                foreach (var candle in value)
-                {
-                    if (!DateToCoordDict.ContainsKey(candle.Dt))
-                    {
-                        DateToCoordDict.Add(candle.Dt, candle.X);
-                    }
-                }
-
-                _candles = value;
-            }
-
-            AutoScaleY();
-        }
-    }
-
-    //utility methods
-    public void AutoScaleY()
-    {
-        y_max = Candles.Max(x => x.High);
-        y_min = Candles.Min(x => x.Low);
-    }
-
-    int CoordToPixelY(decimal coord)
-    {
-        decimal range = y_max - y_min;
-
-        decimal percentFromHigh = (y_max - coord) / range;
-
-        int pixel = (int)(chartAreaHeight * percentFromHigh);
-
-        return pixel;
-    }
-
-    public int CoordToPixelX(int x)
-    {
-        int pixel = LeftPadding + candleAreaWidth * x + 1;
-        return pixel;
-    }
-
     //painting
-    public void Render(int width, int height, string filename)
+    public SKBitmap Render(int width, int height)
     {
         Stopwatch t = new();
         t.Start();
 
         SKBitmap bmp = new(width, height);
         using SKCanvas canvas = new(bmp);
-
-        
         canvas.Clear(skBackgroud);
 
         //draw vertical grid behind candles
@@ -113,7 +56,14 @@ public class DailyChart : Chart
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);
 
-        SKFileWStream fs = new(filename);
+        return bmp;
+    }
+
+    public void RenderToFile(int width, int height, string filename)
+    {
+        SKBitmap bmp = Render(width, height);
+
+        using SKFileWStream fs = new(filename);
         bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
     }
 

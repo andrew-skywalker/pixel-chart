@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using PixelChart.Model;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,5 +55,49 @@ public class Chart
         {
             Color = SKColorFromSystemDrawing(source)
         };
+    }
+
+    //data variables
+    decimal y_min;
+    decimal y_max;
+    List<OhlcCandle> _candles = new();
+    public List<OhlcCandle> Candles
+    {
+        get => _candles;
+        set
+        {
+            if (_candles != value)
+            {
+                _candles = value;
+            }
+
+            AutoScaleY();
+        }
+    }
+
+    public List<(int x, string text)> XTicks = new();
+
+    //utility methods
+    public void AutoScaleY()
+    {
+        y_max = Candles.Max(x => x.High);
+        y_min = Candles.Min(x => x.Low);
+    }
+
+    internal int CoordToPixelY(decimal coord)
+    {
+        decimal range = y_max - y_min;
+
+        decimal percentFromHigh = (y_max - coord) / range;
+
+        int pixel = (int)(chartAreaHeight * percentFromHigh);
+
+        return pixel;
+    }
+
+    internal int CoordToPixelX(int x)
+    {
+        int pixel = LeftPadding + candleAreaWidth * x + 1;
+        return pixel;
     }
 }
