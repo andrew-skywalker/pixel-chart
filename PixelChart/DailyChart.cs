@@ -4,41 +4,13 @@ using SkiaSharp;
 
 namespace PixelChart;
 
-public class DailyChart
+public class DailyChart : Chart
 {
-    public DailyChart(string theme = "light")
+    public DailyChart(string theme = "light") :
+        base(theme)
     {
-        ColorScheme.Init("light");
-
-        skBackgroud = SKColorFromSystemDrawing(ColorScheme.colorBackground);
-        paintGreen = SKPaintFromSystemDrawing(ColorScheme.colorGreenCandle);
-        paintRed = SKPaintFromSystemDrawing(ColorScheme.colorRedCandle);
-        paintGray = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
-
-        paintGrayDot = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
-        paintGrayDot.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
-
-        paintLabels = SKPaintFromSystemDrawing(ColorScheme.colorLables);
-        paintLabels.Typeface = SKTypeface.FromFamilyName("Segoe UI");
-        paintLabels.TextSize = fontSize;
-        paintLabels.IsAntialias = true;
+        
     }
-
-    //SKPaint
-    readonly SKColor skBackgroud;
-    readonly SKPaint paintGreen;
-    readonly SKPaint paintRed;
-    readonly SKPaint paintGray;
-    readonly SKPaint paintGrayDot;
-    readonly SKPaint paintLabels;
-
-    //size variables
-    public int chartAreaHeight = 300;
-    public int chartAreaWidth = 1600;
-    public int LeftPadding { get; set; } = 1;
-    int candleWidth = 3;
-    int candleAreaWidth = 4;
-    int fontSize = 16;
 
     //data variables
     decimal y_min;
@@ -96,19 +68,6 @@ public class DailyChart
     }
 
     //painting
-    static SKColor SKColorFromSystemDrawing(System.Drawing.Color source)
-    {
-        return new SKColor(red: source.R, green: source.G, blue: source.B);
-    }
-
-    static SKPaint SKPaintFromSystemDrawing(System.Drawing.Color source)
-    {
-        return new SKPaint
-        {
-            Color = SKColorFromSystemDrawing(source)
-        };
-    }
-
     public void Render(int width, int height, string filename)
     {
         Stopwatch t = new();
