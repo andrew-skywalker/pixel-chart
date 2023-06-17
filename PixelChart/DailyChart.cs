@@ -73,42 +73,32 @@ public class DailyChart : Chart
         int rectY, rectHeight;
 
         //body
-        if (candle.Close == candle.Open)
+        if (candle.Close > candle.Open)
         {
             rectY = CoordToPixelY(candle.Close);
-            rectHeight = 0;
-
-            canvas.DrawLine(rectX, rectY, rectX + candleWidth - 1, rectY, paint); //not actually hit
+            rectHeight = CoordToPixelY(candle.Open) - rectY;
         }
         else
         {
-            if (candle.Close > candle.Open)
-            {
-                rectY = CoordToPixelY(candle.Close);
-                rectHeight = CoordToPixelY(candle.Open) - rectY;
-            }
-            else
-            {
-                rectY = CoordToPixelY(candle.Open);
-                rectHeight = CoordToPixelY(candle.Close) - rectY;
-            }
+            rectY = CoordToPixelY(candle.Open);
+            rectHeight = CoordToPixelY(candle.Close) - rectY;
+        }
 
-            if (rectHeight == 0) //doji case
+        if (rectHeight == 0) //doji case
+        {
+            canvas.DrawLine(rectX, rectY, rectX + candleWidth, rectY, paint);
+        }
+        else
+        {
+            if (ColorScheme.isCandlesFilled)
             {
-                canvas.DrawLine(rectX, rectY, rectX + candleWidth, rectY, paint); //working
+                SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
+                canvas.DrawRect(rect, paint);
             }
             else
             {
-                if (ColorScheme.isCandlesFilled)
-                {
-                    SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
-                    canvas.DrawRect(rect, paint);
-                }
-                else
-                {
-                    SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
-                    canvas.DrawRect(rect, paint);
-                }
+                SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
+                canvas.DrawRect(rect, paint);
             }
         }
 
