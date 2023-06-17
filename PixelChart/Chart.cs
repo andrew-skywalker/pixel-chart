@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PixelChart;
 
-public class Chart
+public abstract class Chart
 {
     public Chart(string theme)
     {
@@ -99,5 +99,60 @@ public class Chart
     {
         int pixel = LeftPadding + candleAreaWidth * x + 1;
         return pixel;
+    }
+
+    //drawing
+    internal void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
+    {
+        int rectX = LeftPadding + candleAreaWidth * candle.X;
+        int rectY, rectHeight;
+
+        //body
+        if (candle.Close > candle.Open)
+        {
+            rectY = CoordToPixelY(candle.Close);
+            rectHeight = CoordToPixelY(candle.Open) - rectY;
+        }
+        else
+        {
+            rectY = CoordToPixelY(candle.Open);
+            rectHeight = CoordToPixelY(candle.Close) - rectY;
+        }
+
+        if (rectHeight == 0) //doji case
+        {
+            canvas.DrawLine(rectX, rectY, rectX + candleWidth, rectY, paint);
+        }
+        else
+        {
+            if (ColorScheme.isCandlesFilled)
+            {
+                SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
+                canvas.DrawRect(rect, paint);
+            }
+            else
+            {
+                SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
+                canvas.DrawRect(rect, paint);
+            }
+        }
+
+        //upper wick
+        int wickHigh = CoordToPixelY(candle.High);
+        canvas.DrawLine(rectX + 1, wickHigh, rectX + 1, rectY, paint);
+
+        //lower wick
+        int wickLow = CoordToPixelY(candle.Low);
+        canvas.DrawLine(rectX + 1, rectY + rectHeight, rectX + 1, wickLow, paint);
+    }
+
+    public abstract SKBitmap Render(int width, int height); //contains Daily/Intraday logic
+
+    public void RenderToFile(int width, int height, string filename)
+    {
+        SKBitmap bmp = Render(width, height);
+
+        using SKFileWStream fs = new(filename);
+        bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
     }
 }

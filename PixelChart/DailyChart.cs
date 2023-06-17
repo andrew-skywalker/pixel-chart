@@ -12,8 +12,8 @@ public class DailyChart : Chart
         
     }
 
-    //painting
-    public SKBitmap Render(int width, int height)
+    //drawing
+    override public SKBitmap Render(int width, int height)
     {
         Stopwatch t = new();
         t.Start();
@@ -29,7 +29,7 @@ public class DailyChart : Chart
         }
 
         // candles
-        foreach (var c in Candles)
+        foreach (OhlcCandle c in Candles)
         {
             if (c.Close >= c.Open)
             {
@@ -57,57 +57,5 @@ public class DailyChart : Chart
         Debug.WriteLine(t.ElapsedMilliseconds);
 
         return bmp;
-    }
-
-    public void RenderToFile(int width, int height, string filename)
-    {
-        SKBitmap bmp = Render(width, height);
-
-        using SKFileWStream fs = new(filename);
-        bmp.Encode(fs, SKEncodedImageFormat.Png, 100);
-    }
-
-    void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
-    {
-        int rectX = LeftPadding + candleAreaWidth * candle.X;
-        int rectY, rectHeight;
-
-        //body
-        if (candle.Close > candle.Open)
-        {
-            rectY = CoordToPixelY(candle.Close);
-            rectHeight = CoordToPixelY(candle.Open) - rectY;
-        }
-        else
-        {
-            rectY = CoordToPixelY(candle.Open);
-            rectHeight = CoordToPixelY(candle.Close) - rectY;
-        }
-
-        if (rectHeight == 0) //doji case
-        {
-            canvas.DrawLine(rectX, rectY, rectX + candleWidth, rectY, paint);
-        }
-        else
-        {
-            if (ColorScheme.isCandlesFilled)
-            {
-                SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
-                canvas.DrawRect(rect, paint);
-            }
-            else
-            {
-                SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
-                canvas.DrawRect(rect, paint);
-            }
-        }
-
-        //upper wick
-        int wickHigh = CoordToPixelY(candle.High);
-        canvas.DrawLine(rectX + 1, wickHigh, rectX + 1, rectY, paint);
-
-        //lower wick
-        int wickLow = CoordToPixelY(candle.Low);
-        canvas.DrawLine(rectX + 1, rectY + rectHeight, rectX + 1, wickLow, paint);
     }
 }

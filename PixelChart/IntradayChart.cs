@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,10 @@ public class IntradayChart : Chart
         base(theme)
     {
         
+    }
+
+    public override SKBitmap Render(int width, int height)
+    {
+        throw new NotImplementedException();
     }
 }
