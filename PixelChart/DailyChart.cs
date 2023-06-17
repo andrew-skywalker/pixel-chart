@@ -22,36 +22,13 @@ public class DailyChart : Chart
         using SKCanvas canvas = new(bmp);
         canvas.Clear(skBackgroud);
 
-        //draw vertical grid behind candles
-        foreach ((int x, _) in XTicks)
-        {
-            canvas.DrawLine(CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight, paintGrayDot);
-        }
+        DrawVerticalGrid(canvas);
 
-        // candles
-        foreach (OhlcCandle c in Candles)
-        {
-            if (c.Close >= c.Open)
-            {
-                DrawCandle(canvas, c, paintGreen);
-            }
-            else
-            {
-                DrawCandle(canvas, c, paintRed);
-            }
-        }
+        DrawCandles(canvas);
 
-        // horizontal axis
-        canvas.DrawLine(0, chartAreaHeight, chartAreaWidth, chartAreaHeight, paintGray);
+        DrawAxes(canvas);
 
-        //vertical axis
-        canvas.DrawLine(chartAreaWidth, 0, chartAreaWidth, chartAreaHeight, paintGray);
-
-        //draw labels
-        foreach ((int x, string text) in XTicks)
-        {
-            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
-        }
+        DrawXAxisTicks(canvas);
 
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);

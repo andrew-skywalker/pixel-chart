@@ -15,6 +15,7 @@ public abstract class Chart
         ColorScheme.Init(theme);
 
         skBackgroud = SKColorFromSystemDrawing(ColorScheme.colorBackground);
+        paintBackgroudNonMh = SKPaintFromSystemDrawing(ColorScheme.colorBackgroundNonMh);
         paintGreen = SKPaintFromSystemDrawing(ColorScheme.colorGreenCandle);
         paintRed = SKPaintFromSystemDrawing(ColorScheme.colorRedCandle);
         paintGray = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
@@ -30,6 +31,7 @@ public abstract class Chart
 
     //SKPaint
     internal readonly SKColor skBackgroud;
+    internal readonly SKPaint paintBackgroudNonMh;
     internal readonly SKPaint paintGreen;
     internal readonly SKPaint paintRed;
     internal readonly SKPaint paintGray;
@@ -102,6 +104,24 @@ public abstract class Chart
     }
 
     //drawing
+    internal void DrawVerticalGrid(SKCanvas canvas)
+    {
+        //draw vertical grid behind candles
+        foreach ((int x, _) in XTicks)
+        {
+            canvas.DrawLine(CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight, paintGrayDot);
+        }
+    }
+
+    internal void DrawAxes(SKCanvas canvas)
+    {
+        //horizontal axis
+        canvas.DrawLine(0, chartAreaHeight, chartAreaWidth, chartAreaHeight, paintGray);
+
+        //vertical axis
+        canvas.DrawLine(chartAreaWidth, 0, chartAreaWidth, chartAreaHeight, paintGray);
+    }
+
     internal void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
     {
         int rectX = LeftPadding + candleAreaWidth * candle.X;
@@ -144,6 +164,30 @@ public abstract class Chart
         //lower wick
         int wickLow = CoordToPixelY(candle.Low);
         canvas.DrawLine(rectX + 1, rectY + rectHeight, rectX + 1, wickLow, paint);
+    }
+
+    internal void DrawCandles(SKCanvas canvas)
+    {
+        foreach (OhlcCandle c in Candles)
+        {
+            if (c.Close >= c.Open)
+            {
+                DrawCandle(canvas, c, paintGreen);
+            }
+            else
+            {
+                DrawCandle(canvas, c, paintRed);
+            }
+        }
+    }
+
+    internal void DrawXAxisTicks(SKCanvas canvas)
+    {
+        //draw labels
+        foreach ((int x, string text) in XTicks)
+        {
+            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
+        }
     }
 
     public abstract SKBitmap Render(int width, int height); //contains Daily/Intraday logic
