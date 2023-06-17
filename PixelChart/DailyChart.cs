@@ -31,7 +31,7 @@ public class DailyChart : Chart
         // candles
         foreach (var c in Candles)
         {
-            if (c.Close > c.Open)
+            if (c.Close >= c.Open)
             {
                 DrawCandle(canvas, c, paintGreen);
             }
