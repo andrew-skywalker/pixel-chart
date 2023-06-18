@@ -9,7 +9,9 @@ internal class ColorScheme
     public static Color colorBackgroundNonMh;
     public static Color colorGreenCandle;
     public static Color colorRedCandle;
-    public static Color colorGrid;
+    public static Color colorAxes;
+    public static Color colorVerticalGrid;
+    public static Color colorHorizontalGrid;
     public static List<Color> labelColors = new() { };
     public static Color colorLables;
     public static float[] dashPattern = Array.Empty<float>();
@@ -30,7 +32,9 @@ internal class ColorScheme
                 colorBackgroundNonMh = Color.FromArgb(235, 235, 235);
                 colorGreenCandle = Color.FromArgb(0, 110, 0);
                 colorRedCandle = Color.FromArgb(110, 0, 0);
-                colorGrid = Color.Black;
+                colorAxes = Color.Black;
+                colorVerticalGrid = Color.DarkGray;
+                colorHorizontalGrid = Color.DarkGray;
                 labelColors = new() { Color.FromArgb(46, 124, 237), Color.Red, Color.Green, Color.DarkGoldenrod, Color.Black };
                 colorLables = Color.Black;
                 dashPattern = new float[] { 2, 23 };
@@ -42,7 +46,9 @@ internal class ColorScheme
                 colorBackgroundNonMh = Color.DarkBlue;
                 colorGreenCandle = Color.FromArgb(0, 235, 0);
                 colorRedCandle = Color.FromArgb(235, 0, 0);
-                colorGrid = Color.DarkGray;
+                colorAxes = Color.Black;
+                colorVerticalGrid = Color.DarkGray;
+                colorHorizontalGrid = Color.DarkGray;
                 colorLables = Color.DarkGray;
                 dashPattern = new float[] { 1, 25 };
                 isCandlesFilled = false;

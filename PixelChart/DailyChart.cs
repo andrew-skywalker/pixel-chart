@@ -21,6 +21,7 @@ public class DailyChart : Chart
         using SKCanvas canvas = new(bmp);
         canvas.Clear(skBackgroud);
 
+        DrawHorizontalGrid(canvas);
         DrawVerticalGrid(canvas);
 
         DrawCandles(canvas);

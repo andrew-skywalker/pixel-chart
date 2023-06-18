@@ -39,6 +39,7 @@ public class IntradayChart : Chart
 
         DrawPlottables(canvas);
 
+        DrawHorizontalGrid(canvas);
         DrawVerticalGrid(canvas);
 
         DrawCandles(canvas);

@@ -14,10 +14,12 @@ public abstract class Chart
         paintBackgroudNonMh = SKPaintFromSystemDrawing(ColorScheme.colorBackgroundNonMh);
         paintGreen = SKPaintFromSystemDrawing(ColorScheme.colorGreenCandle);
         paintRed = SKPaintFromSystemDrawing(ColorScheme.colorRedCandle);
-        paintGray = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
-
-        paintGrayDot = SKPaintFromSystemDrawing(ColorScheme.colorGrid);
-        paintGrayDot.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
+        
+        paintAxes = SKPaintFromSystemDrawing(ColorScheme.colorAxes);
+        paintVerticalGrid = SKPaintFromSystemDrawing(ColorScheme.colorVerticalGrid);
+        paintVerticalGrid.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
+        paintHorizontalGrid = SKPaintFromSystemDrawing(ColorScheme.colorHorizontalGrid);
+        paintHorizontalGrid.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
 
         paintLabels = SKPaintFromSystemDrawing(ColorScheme.colorLables);
         paintLabels.Typeface = SKTypeface.FromFamilyName("Segoe UI");
@@ -30,8 +32,11 @@ public abstract class Chart
     internal readonly SKPaint paintBackgroudNonMh;
     internal readonly SKPaint paintGreen;
     internal readonly SKPaint paintRed;
-    internal readonly SKPaint paintGray;
-    internal readonly SKPaint paintGrayDot;
+
+    internal readonly SKPaint paintAxes;
+    internal readonly SKPaint paintVerticalGrid;
+    internal readonly SKPaint paintHorizontalGrid;
+
     internal readonly SKPaint paintLabels;
 
     //size variables
@@ -157,17 +162,26 @@ public abstract class Chart
         //draw vertical grid behind candles
         foreach ((int x, _) in XTicks)
         {
-            canvas.DrawLine(CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight, paintGrayDot);
+            canvas.DrawLine(CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight, paintVerticalGrid);
+        }
+    }
+
+    internal void DrawHorizontalGrid(SKCanvas canvas)
+    {
+        //draw horizontal grid behind candles
+        foreach (decimal yTick in YTicks)
+        {
+            canvas.DrawLine(0, CoordToPixelY(yTick), chartAreaWidth, CoordToPixelY(yTick), paintHorizontalGrid);
         }
     }
 
     internal void DrawAxes(SKCanvas canvas)
     {
         //horizontal axis
-        canvas.DrawLine(0, chartAreaHeight, chartAreaWidth, chartAreaHeight, paintGray);
+        canvas.DrawLine(0, chartAreaHeight, chartAreaWidth, chartAreaHeight, paintAxes);
 
         //vertical axis
-        canvas.DrawLine(chartAreaWidth, 0, chartAreaWidth, chartAreaHeight, paintGray);
+        canvas.DrawLine(chartAreaWidth, 0, chartAreaWidth, chartAreaHeight, paintAxes);
     }
 
     internal void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
@@ -242,7 +256,7 @@ public abstract class Chart
         foreach (decimal yTick in YTicks)
         {
             int x = chartAreaWidth + 1;
-            int y = CoordToPixelY(yTick);
+            int y = CoordToPixelY(yTick) + 6;
             canvas.DrawText(yTick.ToString("0.00"), new SKPoint(x, y), paintLabels);
         }
     }
