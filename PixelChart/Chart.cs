@@ -76,6 +76,8 @@ public abstract class Chart
     }
 
     public List<(int x, string text)> XTicks = new();
+    public List<decimal> YTicks = new();
+
     public Dictionary<DateTime, int> DateToCoordDict = new();
 
     //utility methods
@@ -83,6 +85,40 @@ public abstract class Chart
     {
         y_max = Candles.Max(x => x.High);
         y_min = Candles.Min(x => x.Low);
+
+        DefineYTicks();
+    }
+
+    public void DefineYTicks()
+    {
+        decimal tickStep = DefineTickStep();
+
+        //add ticks
+        decimal currTick = (int)Math.Ceiling(y_min / tickStep) * tickStep;
+        while (currTick < y_max)
+        {
+            YTicks.Add(currTick);
+            currTick += tickStep;
+        }
+    }
+
+    const int desiredLabelCount = 4;
+    decimal DefineTickStep()
+    {
+        List<decimal> steps = new() 
+        {
+                 0.02m,       0.05m, 
+            0.1m, 0.2m, 0.25m, 0.5m,
+            1,      2,           5,
+            10,     20,   25,    50,
+            100,    200,  250,   500, 1000, 10000
+        };
+
+        decimal range = y_max - y_min;
+        decimal stepEstimate = (range / desiredLabelCount);
+        decimal closest = steps.OrderBy(x => Math.Abs(stepEstimate - x)).First();
+
+        return closest;
     }
 
     internal int CoordToPixelY(decimal coord)
@@ -195,7 +231,6 @@ public abstract class Chart
 
     internal void DrawXAxisTicks(SKCanvas canvas)
     {
-        //draw labels
         foreach ((int x, string text) in XTicks)
         {
             canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
@@ -204,20 +239,6 @@ public abstract class Chart
 
     internal void DrawYAxisTicks(SKCanvas canvas)
     {
-        //select tick strategy
-        decimal tickEveryDollars = 0.5m;
-        List<decimal> YTicks = new();
-
-
-        //add ticks
-        decimal currTick = (int)Math.Ceiling(y_min / tickEveryDollars) * tickEveryDollars;
-        while (currTick < y_max)
-        {
-            YTicks.Add(currTick);
-            currTick += tickEveryDollars;
-        }
-
-        //draw ticks
         foreach (decimal yTick in YTicks)
         {
             int x = chartAreaWidth + 1;
