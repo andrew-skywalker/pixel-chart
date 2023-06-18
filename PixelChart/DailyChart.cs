@@ -21,15 +21,9 @@ public class DailyChart : Chart
         using SKCanvas canvas = new(bmp);
         canvas.Clear(skBackgroud);
 
-        DrawHorizontalGrid(canvas);
-        DrawVerticalGrid(canvas);
-
+        DrawAxesAndGrids(canvas);
+        
         DrawCandles(canvas);
-
-        DrawAxes(canvas);
-
-        DrawXAxisTicks(canvas);
-        DrawYAxisTicks(canvas);
 
         DrawTitle(canvas);
 

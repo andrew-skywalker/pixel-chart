@@ -1,4 +1,4 @@
-﻿using PixelChart.Model;
+﻿using PixelChart.Plottables;
 using SkiaSharp;
 using System.Diagnostics;
 
@@ -39,15 +39,9 @@ public class IntradayChart : Chart
 
         DrawPlottables(canvas);
 
-        DrawHorizontalGrid(canvas);
-        DrawVerticalGrid(canvas);
+        DrawAxesAndGrids(canvas);
 
         DrawCandles(canvas);
-
-        DrawAxes(canvas);
-
-        DrawXAxisTicks(canvas);
-        DrawYAxisTicks(canvas);
 
         DrawTitle(canvas);
 

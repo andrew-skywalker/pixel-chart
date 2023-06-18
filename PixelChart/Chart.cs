@@ -1,5 +1,5 @@
 ﻿using PixelChart.Interface;
-using PixelChart.Model;
+using PixelChart.Plottables;
 using SkiaSharp;
 
 namespace PixelChart;
@@ -92,8 +92,8 @@ public abstract class Chart
         }
     }
 
-    public List<(int x, string text)> XTicks = new();
-    public List<decimal> YTicks = new();
+    public XAxis XAxis { get; set; } = new();
+    public YAxis YAxis { get; set; } = new();
 
     public Dictionary<DateTime, int> DateToCoordDict = new();
 
@@ -114,7 +114,7 @@ public abstract class Chart
         decimal currTick = (int)Math.Ceiling(y_min / tickStep) * tickStep;
         while (currTick < y_max)
         {
-            YTicks.Add(currTick);
+            YAxis.YTicks.Add(currTick);
             currTick += tickStep;
         }
     }
@@ -172,107 +172,17 @@ public abstract class Chart
     }
 
     //drawing
-    internal void DrawVerticalGrid(SKCanvas canvas)
+    internal void DrawAxesAndGrids(SKCanvas canvas)
     {
-        //draw vertical grid behind candles
-        foreach ((int x, _) in XTicks)
-        {
-            canvas.DrawLine(CoordToPixelX(x), CandleAreaTopPixel, CoordToPixelX(x), CandleAreaBottomPixel, paintVerticalGrid);
-        }
-    }
-
-    internal void DrawHorizontalGrid(SKCanvas canvas)
-    {
-        //draw horizontal grid behind candles
-        foreach (decimal yTick in YTicks)
-        {
-            canvas.DrawLine(0, CoordToPixelY(yTick), chartAreaWidth, CoordToPixelY(yTick), paintHorizontalGrid);
-        }
-    }
-
-    internal void DrawAxes(SKCanvas canvas)
-    {
-        //horizontal axis
-        canvas.DrawLine(0, CandleAreaBottomPixel, chartAreaWidth, CandleAreaBottomPixel, paintAxes);
-
-        //vertical axis
-        canvas.DrawLine(chartAreaWidth, CandleAreaTopPixel, chartAreaWidth, CandleAreaBottomPixel, paintAxes);
-    }
-
-    internal void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
-    {
-        int rectX = LeftPadding + candleAreaWidth * candle.X;
-        int rectY, rectHeight;
-
-        //body
-        if (candle.Close > candle.Open)
-        {
-            rectY = CoordToPixelY(candle.Close);
-            rectHeight = CoordToPixelY(candle.Open) - rectY;
-        }
-        else
-        {
-            rectY = CoordToPixelY(candle.Open);
-            rectHeight = CoordToPixelY(candle.Close) - rectY;
-        }
-
-        if (rectHeight == 0) //doji case
-        {
-            canvas.DrawLine(rectX, rectY, rectX + candleWidth, rectY, paint);
-        }
-        else
-        {
-            if (ColorScheme.isCandlesFilled)
-            {
-                SKRect rect = new(rectX, rectY, rectX + candleWidth, rectY + rectHeight);
-                canvas.DrawRect(rect, paint);
-            }
-            else
-            {
-                SKRect rect = new(rectX, rectY, rectX + candleWidth - 1, rectY + rectHeight);
-                canvas.DrawRect(rect, paint);
-            }
-        }
-
-        //upper wick
-        int wickHigh = CoordToPixelY(candle.High);
-        canvas.DrawLine(rectX + 1, wickHigh, rectX + 1, rectY, paint);
-
-        //lower wick
-        int wickLow = CoordToPixelY(candle.Low);
-        canvas.DrawLine(rectX + 1, rectY + rectHeight, rectX + 1, wickLow, paint);
+        XAxis.Plot(canvas, this);
+        YAxis.Plot(canvas, this);
     }
 
     internal void DrawCandles(SKCanvas canvas)
     {
         foreach (OhlcCandle c in Candles)
         {
-            if (c.Close >= c.Open)
-            {
-                DrawCandle(canvas, c, paintGreen);
-            }
-            else
-            {
-                DrawCandle(canvas, c, paintRed);
-            }
-        }
-    }
-
-    internal void DrawXAxisTicks(SKCanvas canvas)
-    {
-        foreach ((int x, string text) in XTicks)
-        {
-            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, CandleAreaBottomPixel + labelsFontSize), paintLabels);
-        }
-    }
-
-    internal void DrawYAxisTicks(SKCanvas canvas)
-    {
-        foreach (decimal yTick in YTicks)
-        {
-            int x = chartAreaWidth + 1;
-            int y = CoordToPixelY(yTick) + 6;
-            canvas.DrawText(yTick.ToString("0.00"), new SKPoint(x, y), paintLabels);
+            c.Plot(canvas, this);
         }
     }
 
@@ -282,20 +192,8 @@ public abstract class Chart
         {
             if (item is PriceLine line)
             {
-                DrawPriceLine(canvas, line);
+                line.Plot(canvas, this);
             }
-        }
-    }
-
-    public void DrawPriceLine(SKCanvas canvas, PriceLine line)
-    {
-        if (DateToCoordDict.ContainsKey(line.DtFrom) && DateToCoordDict.ContainsKey(line.DtTo))
-        {
-            int x1 = CoordToPixelX(DateToCoordDict[line.DtFrom]);
-            int x2 = CoordToPixelX(DateToCoordDict[line.DtTo]);
-            int y = CoordToPixelY(line.Price);
-
-            canvas.DrawLine(x1, y, x2, y, paintRed);
         }
     }
 
@@ -306,7 +204,7 @@ public abstract class Chart
             return;
         }
 
-        canvas.DrawText(Title, new SKPoint(20, titleFontSize), paintTitle);
+        canvas.DrawText(Title, new SKPoint(20, titleFontSize - 5), paintTitle);
     }
 
     public abstract SKBitmap Render(int width, int height); //contains Daily/Intraday logic
