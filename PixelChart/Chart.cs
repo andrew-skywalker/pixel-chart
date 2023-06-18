@@ -1,4 +1,5 @@
-﻿using PixelChart.Model;
+﻿using PixelChart.Interface;
+using PixelChart.Model;
 using SkiaSharp;
 
 namespace PixelChart;
@@ -57,6 +58,7 @@ public abstract class Chart
     //data variables
     decimal y_min;
     decimal y_max;
+    public List<IPlottable> Plottables { get; set; } = new();
     List<OhlcCandle> _candles = new();
     public List<OhlcCandle> Candles
     {
@@ -65,6 +67,7 @@ public abstract class Chart
         {
             if (_candles != value)
             {
+                FillDateToCoordDict(value);
                 _candles = value;
             }
 
@@ -73,6 +76,7 @@ public abstract class Chart
     }
 
     public List<(int x, string text)> XTicks = new();
+    public Dictionary<DateTime, int> DateToCoordDict = new();
 
     //utility methods
     public void AutoScaleY()
@@ -96,6 +100,19 @@ public abstract class Chart
     {
         int pixel = LeftPadding + candleAreaWidth * x + 1;
         return pixel;
+    }
+
+    private void FillDateToCoordDict(List<OhlcCandle> candles)
+    {
+        DateToCoordDict.Clear();
+
+        foreach (var candle in candles)
+        {
+            if (!DateToCoordDict.ContainsKey(candle.Dt))
+            {
+                DateToCoordDict.Add(candle.Dt, candle.X);
+            }
+        }
     }
 
     //drawing
@@ -182,6 +199,53 @@ public abstract class Chart
         foreach ((int x, string text) in XTicks)
         {
             canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
+        }
+    }
+
+    internal void DrawYAxisTicks(SKCanvas canvas)
+    {
+        //select tick strategy
+        decimal tickEveryDollars = 0.5m;
+        List<decimal> YTicks = new();
+
+
+        //add ticks
+        decimal currTick = (int)Math.Ceiling(y_min / tickEveryDollars) * tickEveryDollars;
+        while (currTick < y_max)
+        {
+            YTicks.Add(currTick);
+            currTick += tickEveryDollars;
+        }
+
+        //draw ticks
+        foreach (decimal yTick in YTicks)
+        {
+            int x = chartAreaWidth + 1;
+            int y = CoordToPixelY(yTick);
+            canvas.DrawText(yTick.ToString("0.00"), new SKPoint(x, y), paintLabels);
+        }
+    }
+
+    public void DrawPlottables(SKCanvas canvas)
+    {
+        foreach (var item in Plottables)
+        {
+            if (item is PriceLine line)
+            {
+                DrawPriceLine(canvas, line);
+            }
+        }
+    }
+
+    public void DrawPriceLine(SKCanvas canvas, PriceLine line)
+    {
+        if (DateToCoordDict.ContainsKey(line.DtFrom) && DateToCoordDict.ContainsKey(line.DtTo))
+        {
+            int x1 = CoordToPixelX(DateToCoordDict[line.DtFrom]);
+            int x2 = CoordToPixelX(DateToCoordDict[line.DtTo]);
+            int y = CoordToPixelY(line.Price);
+
+            canvas.DrawLine(x1, y, x2, y, paintRed);
         }
     }
 

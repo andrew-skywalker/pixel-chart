@@ -36,7 +36,9 @@ public class IntradayChart : Chart
                 canvas.DrawRect(rect, paintBackgroudNonMh);
             }
         }
-        
+
+        DrawPlottables(canvas);
+
         DrawVerticalGrid(canvas);
 
         DrawCandles(canvas);
@@ -44,6 +46,7 @@ public class IntradayChart : Chart
         DrawAxes(canvas);
 
         DrawXAxisTicks(canvas);
+        DrawYAxisTicks(canvas);
 
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);

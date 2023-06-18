@@ -28,6 +28,7 @@ public class DailyChart : Chart
         DrawAxes(canvas);
 
         DrawXAxisTicks(canvas);
+        DrawYAxisTicks(canvas);
 
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);
