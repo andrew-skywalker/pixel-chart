@@ -174,8 +174,8 @@ public abstract class Chart
     //drawing
     internal void DrawAxesAndGrids(SKCanvas canvas)
     {
-        XAxis.Plot(canvas, this);
         YAxis.Plot(canvas, this);
+        XAxis.Plot(canvas, this);
     }
 
     internal void DrawCandles(SKCanvas canvas)

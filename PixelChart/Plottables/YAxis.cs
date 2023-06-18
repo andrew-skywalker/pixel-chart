@@ -23,8 +23,8 @@ public class YAxis : IPlottable
         {
             foreach (decimal yTick in YTicks)
             {
-                canvas.DrawLine(0, p.CoordToPixelY(yTick), p.chartAreaWidth, p.CoordToPixelY(yTick), p.paintHorizontalGrid);
-            } 
+                canvas.DrawLine(0, p.CoordToPixelY(yTick), p.chartAreaWidth - 1, p.CoordToPixelY(yTick), p.paintHorizontalGrid);
+            }
         }
 
         //ticks

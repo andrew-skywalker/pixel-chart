@@ -13,7 +13,7 @@ public class XAxis : IPlottable
     public void Plot(SKCanvas canvas, Chart p)
     {
         //horizontal axis
-        if (IsVisible) 
+        if (IsVisible)
         {
             canvas.DrawLine(0, p.CandleAreaBottomPixel, p.chartAreaWidth, p.CandleAreaBottomPixel, p.paintAxes);
         }
@@ -24,7 +24,7 @@ public class XAxis : IPlottable
             foreach ((int x, _) in XTicks)
             {
                 canvas.DrawLine(p.CoordToPixelX(x), p.CandleAreaTopPixel, p.CoordToPixelX(x), 
-                    p.CandleAreaBottomPixel, p.paintVerticalGrid);
+                    p.CandleAreaBottomPixel - 1, p.paintVerticalGrid);
             }
         }
 
