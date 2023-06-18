@@ -29,7 +29,7 @@ public class IntradayChart : Chart
         {
             int rectX = LeftPadding + candleAreaWidth * c.X - 1;
 
-            SKRect rect = new(rectX, 0, rectX + candleAreaWidth, chartAreaHeight);
+            SKRect rect = new(rectX, CandleAreaTopPixel, rectX + candleAreaWidth, CandleAreaBottomPixel);
             
             if (c.Dt.TimeOfDay < mhStartTime || c.Dt.TimeOfDay >= mhEndTime) //non-market hours
             {

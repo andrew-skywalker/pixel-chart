@@ -40,6 +40,7 @@ public abstract class Chart
     internal readonly SKPaint paintLabels;
 
     //size variables
+    public int TitleHeight = 50;
     public int chartAreaHeight = 300;
     public int chartAreaWidth = 1600;
     public int LeftPadding { get; set; } = 1;
@@ -132,7 +133,7 @@ public abstract class Chart
 
         decimal percentFromHigh = (y_max - coord) / range;
 
-        int pixel = (int)(chartAreaHeight * percentFromHigh);
+        int pixel = TitleHeight + (int)(chartAreaHeight * percentFromHigh);
 
         return pixel;
     }
@@ -142,6 +143,9 @@ public abstract class Chart
         int pixel = LeftPadding + candleAreaWidth * x + 1;
         return pixel;
     }
+
+    internal int CandleAreaTopPixel { get => TitleHeight; }
+    internal int CandleAreaBottomPixel { get => TitleHeight + chartAreaHeight; }
 
     private void FillDateToCoordDict(List<OhlcCandle> candles)
     {
@@ -162,7 +166,7 @@ public abstract class Chart
         //draw vertical grid behind candles
         foreach ((int x, _) in XTicks)
         {
-            canvas.DrawLine(CoordToPixelX(x), 0, CoordToPixelX(x), chartAreaHeight, paintVerticalGrid);
+            canvas.DrawLine(CoordToPixelX(x), CandleAreaTopPixel, CoordToPixelX(x), CandleAreaBottomPixel, paintVerticalGrid);
         }
     }
 
@@ -178,10 +182,10 @@ public abstract class Chart
     internal void DrawAxes(SKCanvas canvas)
     {
         //horizontal axis
-        canvas.DrawLine(0, chartAreaHeight, chartAreaWidth, chartAreaHeight, paintAxes);
+        canvas.DrawLine(0, CandleAreaBottomPixel, chartAreaWidth, CandleAreaBottomPixel, paintAxes);
 
         //vertical axis
-        canvas.DrawLine(chartAreaWidth, 0, chartAreaWidth, chartAreaHeight, paintAxes);
+        canvas.DrawLine(chartAreaWidth, CandleAreaTopPixel, chartAreaWidth, CandleAreaBottomPixel, paintAxes);
     }
 
     internal void DrawCandle(SKCanvas canvas, OhlcCandle candle, SKPaint paint)
@@ -247,7 +251,7 @@ public abstract class Chart
     {
         foreach ((int x, string text) in XTicks)
         {
-            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, chartAreaHeight + fontSize), paintLabels);
+            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, CandleAreaBottomPixel + fontSize), paintLabels);
         }
     }
 
