@@ -23,8 +23,16 @@ public abstract class Chart
 
         paintLabels = SKPaintFromSystemDrawing(ColorScheme.colorLables);
         paintLabels.Typeface = SKTypeface.FromFamilyName("Segoe UI");
-        paintLabels.TextSize = fontSize;
+        paintLabels.TextSize = labelsFontSize;
         paintLabels.IsAntialias = true;
+
+        paintTitle = SKPaintFromSystemDrawing(ColorScheme.colorTitle);
+        paintTitle.Typeface = SKTypeface.FromFamilyName("Segoe UI",
+            SKFontStyleWeight.Bold,
+            SKFontStyleWidth.Normal,
+            SKFontStyleSlant.Upright);
+        paintTitle.TextSize = titleFontSize;
+        paintTitle.IsAntialias = true;
     }
 
     //SKPaint
@@ -38,15 +46,18 @@ public abstract class Chart
     internal readonly SKPaint paintHorizontalGrid;
 
     internal readonly SKPaint paintLabels;
+    internal readonly SKPaint paintTitle;
 
     //size variables
-    public int TitleHeight = 50;
+    public int TitleHeight = 0;
+    public string Title = "";
     public int chartAreaHeight = 300;
     public int chartAreaWidth = 1600;
     public int LeftPadding { get; set; } = 1;
     internal int candleWidth = 3;
     internal int candleAreaWidth = 4;
-    internal int fontSize = 16;
+    internal int labelsFontSize = 16;
+    internal int titleFontSize = 30;
 
     static SKColor SKColorFromSystemDrawing(System.Drawing.Color source)
     {
@@ -251,7 +262,7 @@ public abstract class Chart
     {
         foreach ((int x, string text) in XTicks)
         {
-            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, CandleAreaBottomPixel + fontSize), paintLabels);
+            canvas.DrawText(text, new SKPoint(x * candleAreaWidth, CandleAreaBottomPixel + labelsFontSize), paintLabels);
         }
     }
 
@@ -286,6 +297,16 @@ public abstract class Chart
 
             canvas.DrawLine(x1, y, x2, y, paintRed);
         }
+    }
+
+    public void DrawTitle(SKCanvas canvas)
+    {
+        if (TitleHeight == 0 || Title == "")
+        {
+            return;
+        }
+
+        canvas.DrawText(Title, new SKPoint(20, titleFontSize), paintTitle);
     }
 
     public abstract SKBitmap Render(int width, int height); //contains Daily/Intraday logic

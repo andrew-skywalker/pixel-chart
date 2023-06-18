@@ -31,6 +31,8 @@ public class DailyChart : Chart
         DrawXAxisTicks(canvas);
         DrawYAxisTicks(canvas);
 
+        DrawTitle(canvas);
+
         t.Stop();
         Debug.WriteLine(t.ElapsedMilliseconds);
 

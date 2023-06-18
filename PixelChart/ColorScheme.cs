@@ -14,6 +14,7 @@ internal class ColorScheme
     public static Color colorHorizontalGrid;
     public static List<Color> labelColors = new() { };
     public static Color colorLables;
+    public static Color colorTitle;
     public static float[] dashPattern = Array.Empty<float>();
     public static bool isCandlesFilled;
 
@@ -37,6 +38,7 @@ internal class ColorScheme
                 colorHorizontalGrid = Color.DarkGray;
                 labelColors = new() { Color.FromArgb(46, 124, 237), Color.Red, Color.Green, Color.DarkGoldenrod, Color.Black };
                 colorLables = Color.Black;
+                colorTitle = Color.FromArgb(130, 130, 130);
                 dashPattern = new float[] { 2, 23 };
                 isCandlesFilled = true;
                 break;
@@ -50,6 +52,7 @@ internal class ColorScheme
                 colorVerticalGrid = Color.DarkGray;
                 colorHorizontalGrid = Color.DarkGray;
                 colorLables = Color.DarkGray;
+                colorTitle = Color.LightGray;
                 dashPattern = new float[] { 1, 25 };
                 isCandlesFilled = false;
                 break;
