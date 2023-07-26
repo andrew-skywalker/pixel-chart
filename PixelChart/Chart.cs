@@ -14,7 +14,8 @@ public abstract class Chart
         paintBackgroudNonMh = SKPaintFromSystemDrawing(ColorScheme.colorBackgroundNonMh);
         paintGreen = SKPaintFromSystemDrawing(ColorScheme.colorGreenCandle);
         paintRed = SKPaintFromSystemDrawing(ColorScheme.colorRedCandle);
-        
+        paintYellow = SKPaintFromSystemDrawing(ColorScheme.colorVerticalLine);
+
         paintAxes = SKPaintFromSystemDrawing(ColorScheme.colorAxes);
         paintVerticalGrid = SKPaintFromSystemDrawing(ColorScheme.colorVerticalGrid);
         paintVerticalGrid.PathEffect = SKPathEffect.CreateDash(ColorScheme.dashPattern, 0);
@@ -40,6 +41,7 @@ public abstract class Chart
     internal readonly SKPaint paintBackgroudNonMh;
     internal readonly SKPaint paintGreen;
     internal readonly SKPaint paintRed;
+    internal readonly SKPaint paintYellow;
 
     internal readonly SKPaint paintAxes;
     internal readonly SKPaint paintVerticalGrid;
@@ -96,7 +98,7 @@ public abstract class Chart
     public YAxis YAxis { get; set; } = new();
 
     public Dictionary<DateTime, int> DateToCoordDict = new();
-
+    
     //utility methods
     public void AutoScaleY()
     {
@@ -190,10 +192,7 @@ public abstract class Chart
     {
         foreach (var item in Plottables)
         {
-            if (item is PriceLine line)
-            {
-                line.Plot(canvas, this);
-            }
+            item.Plot(canvas, this);
         }
     }
 

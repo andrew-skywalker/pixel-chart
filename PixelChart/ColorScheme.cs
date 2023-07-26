@@ -9,6 +9,7 @@ internal class ColorScheme
     public static Color colorBackgroundNonMh;
     public static Color colorGreenCandle;
     public static Color colorRedCandle;
+    public static Color colorVerticalLine;
     public static Color colorAxes;
     public static Color colorVerticalGrid;
     public static Color colorHorizontalGrid;
@@ -33,6 +34,7 @@ internal class ColorScheme
                 colorBackgroundNonMh = Color.FromArgb(235, 235, 235);
                 colorGreenCandle = Color.FromArgb(0, 110, 0);
                 colorRedCandle = Color.FromArgb(110, 0, 0);
+                colorVerticalLine = Color.FromArgb(251, 188, 5);
                 colorAxes = Color.Black;
                 colorVerticalGrid = Color.DarkGray;
                 colorHorizontalGrid = Color.DarkGray;
@@ -48,6 +50,7 @@ internal class ColorScheme
                 colorBackgroundNonMh = Color.DarkBlue;
                 colorGreenCandle = Color.FromArgb(0, 235, 0);
                 colorRedCandle = Color.FromArgb(235, 0, 0);
+                colorVerticalLine = Color.FromArgb(251, 188, 5);
                 colorAxes = Color.Black;
                 colorVerticalGrid = Color.DarkGray;
                 colorHorizontalGrid = Color.DarkGray;
