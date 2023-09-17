@@ -1,1 +1,1 @@
-Simple library to generate chart images
+Simple library to render OHLC chart images

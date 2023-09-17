@@ -14,7 +14,8 @@
     <RepositoryUrl>https://github.com/andrew-skywalker/pixel-chart</RepositoryUrl>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<Authors>andrew-skywalker</Authors>
-	<VersionPrefix>1.1.0</VersionPrefix>
+	<VersionPrefix>1.2.0</VersionPrefix>
+	<Description>Simple library to render OHLC chart images</Description>
   </PropertyGroup>
 
   <ItemGroup>
