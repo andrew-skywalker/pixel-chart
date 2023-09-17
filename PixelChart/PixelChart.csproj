@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName).Test</PackageId>
     <Title>PixelChart.Test</Title>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
