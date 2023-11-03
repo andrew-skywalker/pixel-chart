@@ -14,13 +14,15 @@
     <RepositoryUrl>https://github.com/andrew-skywalker/pixel-chart</RepositoryUrl>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<Authors>andrew-skywalker</Authors>
-	<VersionPrefix>1.3.0</VersionPrefix>
+	<VersionPrefix>1.4.0</VersionPrefix>
 	<Description>Simple library to render OHLC chart images</Description>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="2.88.3" />
+    <PackageReference Include="SkiaSharp" Version="2.88.6" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.6" />
+    
   </ItemGroup>
 
   <ItemGroup>
