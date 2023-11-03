@@ -102,6 +102,11 @@ public abstract class Chart
     //utility methods
     public void AutoScaleY()
     {
+        if (Candles.Count == 0)
+        {
+            return;
+        }
+
         y_max = Candles.Max(x => x.High);
         y_min = Candles.Min(x => x.Low);
 
